@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import PlanetsContext from './PlanetsContext';
+import response from '../testData';
 
 function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
+  console.log(data);
 
   const [filters, setFilters] = useState(
     {
@@ -15,8 +17,9 @@ function PlanetsProvider({ children }) {
 
   function requestApi() {
     fetch('https://swapi-trybe.herokuapp.com/api/planets/')
-      .then((result) => result.json())
-      .then((result) => setData(result.results));
+      .then((result) => result.json());
+    // .then((result) => setData(result.results));
+    setData(response.results);
   }
 
   return (

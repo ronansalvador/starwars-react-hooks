@@ -13,19 +13,17 @@ function Table() {
           name: target.value,
         } },
     );
-    console.log(filters);
-  }
-
-  function filterName(nome) {
-    const filterByName = data.filter(
-      (planet) => planet.name.toLowerCase().includes(nome.toLowerCase()),
-    );
-    setDataToFilter(filterByName);
   }
 
   useEffect(() => {
+    function filterName(nome) {
+      const filterByName = data.filter(
+        (planet) => planet.name.toLowerCase().includes(nome.toLowerCase()),
+      );
+      setDataToFilter(filterByName);
+    }
     filterName(filters.filterByName.name);
-  }, [filters.filterByName.name]);
+  }, [data, filters.filterByName.name]);
 
   useEffect(() => {
     requestApi();
