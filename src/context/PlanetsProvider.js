@@ -5,6 +5,14 @@ import PlanetsContext from './PlanetsContext';
 function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
 
+  const [filters, setFilters] = useState(
+    {
+      filterByName: {
+        name: '',
+      },
+    },
+  );
+
   function requestApi() {
     fetch('https://swapi-trybe.herokuapp.com/api/planets/')
       .then((result) => result.json())
@@ -14,7 +22,7 @@ function PlanetsProvider({ children }) {
   return (
     <PlanetsContext.Provider
       value={
-        { data, setData, requestApi }
+        { data, setData, requestApi, filters, setFilters }
       }
     >
       {children}
