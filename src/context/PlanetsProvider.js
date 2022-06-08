@@ -5,7 +5,6 @@ import response from '../testData';
 
 function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
-  console.log(data);
 
   const [filters, setFilters] = useState(
     {
@@ -38,6 +37,9 @@ function PlanetsProvider({ children }) {
 }
 
 PlanetsProvider.propTypes = {
-  children: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 };
 export default PlanetsProvider;

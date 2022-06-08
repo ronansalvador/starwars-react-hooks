@@ -1,0 +1,70 @@
+.tabela {
+  border-collapse: collapse;
+  font-family: Arial , Helvetica , sans-serif;
+  text-align: center;
+  width: 100%;
+}
+
+.tabela td, .tabela th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+/* .tabela tr:nth-child( even ) { background-color: #f2f2f2;} */
+.tabela tr:hover { background-color: black;
+  color: yellow;}
+
+.tabela th {
+  background-color: black;
+  color: white;
+  padding-bottom: 12px;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.filters {
+  align-items: center;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 15px;
+}
+
+select, input {
+  background-color: #1d1e1e;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: white;
+  margin-left: 10px;
+  padding: 5px;
+}
+
+button {
+  background-color: #1d1e1e;
+  border: 1px solid yellow;
+  border-radius: 5px;
+  color: yellow;
+  padding: 10px;
+
+}
+
+button:hover {
+  background-color: yellow;
+  color: black;
+}
+
+.filterName {
+  align-items: center;
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.filterName input {
+  border-radius: 5px;
+  padding: 15px;
+}
+
+h1 {
+  text-align: center;
+}

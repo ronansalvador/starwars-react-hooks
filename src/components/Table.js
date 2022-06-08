@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
+import Thead from './Thead';
+import './Table.css';
+import Tbody from './Tbody';
 
 function Table() {
   const { data, requestApi, filters, setFilters } = useContext(PlanetsContext);
+  const { filterByNumericValues } = filters;
   const [dataToFilter, setDataToFilter] = useState([]);
   const [filterNumeric, setFilterNumeric] = useState([]);
   const [inputColumn, setInputColumn] = useState('population');
@@ -15,12 +19,12 @@ function Table() {
   const [saveFilters, setSaveFilters] = useState(initialFilter);
   console.log(inputColumn, inputComparison, inputNumber);
 
-  const [columnsName, setColumnsName] = useState(
-    ['population',
-      'orbital_period',
-      'diameter',
-      'rotation_period', 'surface_water'],
-  );
+  const allColumns = ['population',
+    'orbital_period',
+    'diameter',
+    'rotation_period', 'surface_water'];
+
+  const [columnsName, setColumnsName] = useState(allColumns);
 
   function handleColumn({ target: { name, value } }) {
     setInputColumn(value);
@@ -68,9 +72,21 @@ function Table() {
   useEffect(() => {
     if (filters.filterByNumericValues.length > 0) {
       const lengthFilter = filters.filterByNumericValues.length - 1;
+      console.log(lengthFilter);
       onClickFilter(filters.filterByNumericValues[lengthFilter]);
       filterColumns(filters.filterByNumericValues[lengthFilter]);
     }
+  }, [filters.filterByNumericValues]);
+
+  useEffect(() => {
+    const newColumns = allColumns.reduce((acc, col) => {
+      if (filters.filterByNumericValues.some((e) => e.column === col)) {
+        return acc;
+      }
+      acc.push(col);
+      return acc;
+    }, []);
+    setColumnsName(newColumns);
   }, [filters.filterByNumericValues]);
 
   useEffect(() => {
@@ -87,9 +103,23 @@ function Table() {
     requestApi();
   }, [requestApi]);
 
+  function saveNumericFilters() {
+    // showFilters();
+    const numericFilter = {
+      column: inputColumn,
+      comparison: inputComparison,
+      value: inputNumber,
+    };
+    setFilters({ ...filters,
+      filterByNumericValues: [...filters.filterByNumericValues, numericFilter] });
+    setFilterNumeric([...filterNumeric, numericFilter]);
+  }
+
   function removeFilter({ target: { name } }) {
-    setDataToFilter(data);
     setFilterNumeric(filterNumeric.filter((element) => element.column !== name));
+    setFilters({ ...filters,
+      filterByNumericValues: filterByNumericValues
+        .filter((element) => element.column !== name) });
   }
 
   function showFilters() {
@@ -112,7 +142,6 @@ function Table() {
               name={ filter.column }
             >
               x
-
             </button>
           </div>
         )) }
@@ -120,113 +149,84 @@ function Table() {
     );
   }
 
-  function saveNumericFilters() {
-    // setFilters({ ...filters,
-    //   filterByNumericValues: [...filters.filterByNumericValues, saveFilters] });
-    // if (filterNumeric.length === 0) {
-    //   setFilterNumeric([saveFilters]);
-    // } else {
-    //   console.log(saveFilters);
-    //   setFilterNumeric([...filterNumeric, ...saveFilters]);
-    // }
-    // showFilters();
-    const numericFilter = {
-      column: inputColumn,
-      comparison: inputComparison,
-      value: inputNumber,
-    };
-    setFilters({ ...filters,
-      filterByNumericValues: [...filters.filterByNumericValues, numericFilter] });
-
-    setFilterNumeric([...filterNumeric, numericFilter]);
-    console.log('column', inputColumn);
-    console.log('comparison', inputComparison);
-    console.log('value', inputNumber);
-    console.log(numericFilter);
-  }
+  const removeAllFilters = () => {
+    setFilterNumeric([]);
+    setColumnsName(allColumns);
+    setDataToFilter(data);
+  };
 
   return (
     <main>
-      <input type="text" onChange={ handleChange } data-testid="name-filter" />
-      <select
-        name="column"
-        // onChange={ ({ target }) => setInputColumn(target.value) }
-        onChange={ handleColumn }
-        data-testid="column-filter"
-        value={ inputColumn }
-      >
-        {columnsName
+      <h1>Projeto Starwars</h1>
+      <div className="filterName">
+        <label htmlFor="filterName">
+          Buscar por nome:
+          <input
+            type="text"
+            onChange={ handleChange }
+            data-testid="name-filter"
+            id="filterName"
+          />
+        </label>
+      </div>
+      <div className="filters">
+        <label htmlFor="column">
+          Coluna
+          <select
+            name="column"
+            id="column"
+            onChange={ handleColumn }
+            data-testid="column-filter"
+            value={ inputColumn }
+          >
+            {columnsName
         && columnsName.map((element, index) => (
           <option value={ element } key={ index }>
             {element}
           </option>
         ))}
-      </select>
-      <select
-        name="comparison"
-        // onChange={ ({ target }) => setInputComparison(target.value) }
-        onChange={ handleComparison }
-        data-testid="comparison-filter"
-        value={ inputComparison }
-      >
-        <option value="maior que">maior que</option>
-        <option value="menor que">menor que</option>
-        <option value="igual a">igual a</option>
-      </select>
-      <input
-        type="number"
-        // onChange={ ({ target }) => setInputNumber(target.value) }
-        onChange={ handleNumber }
-        name="value"
-        data-testid="value-filter"
-        value={ inputNumber }
-      />
-      <button
-        type="button"
-        onClick={ saveNumericFilters }
-        // onClick={ testeFilter }
-        data-testid="button-filter"
-      >
-        Filtrar
-      </button>
+          </select>
+        </label>
+        <label htmlFor="comparison">
+          Operador
+          <select
+            name="comparison"
+            id="comparison"
+            onChange={ handleComparison }
+            data-testid="comparison-filter"
+            value={ inputComparison }
+          >
+            <option value="maior que">maior que</option>
+            <option value="menor que">menor que</option>
+            <option value="igual a">igual a</option>
+          </select>
+        </label>
+        <input
+          type="number"
+          onChange={ handleNumber }
+          name="value"
+          data-testid="value-filter"
+          value={ inputNumber }
+        />
+        <button
+          type="button"
+          onClick={ saveNumericFilters }
+          data-testid="button-filter"
+        >
+          Filtrar
+        </button>
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ removeAllFilters }
+        >
+          Remover Filtros
+        </button>
+      </div>
       { showFilters() }
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Rotation Period</th>
-            <th>Orbital Period</th>
-            <th>Diameter</th>
-            <th>Climate</th>
-            <th>Gravity</th>
-            <th>Terrain</th>
-            <th>Surface Water</th>
-            <th>Population</th>
-            <th>Films</th>
-            <th>Created</th>
-            <th>Edited</th>
-            <th>URL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dataToFilter.map((planet) => (
-            <tr key={ planet.name }>
-              <td data-testid="planet-name">{ planet.name }</td>
-              <td>{ planet.rotation_period }</td>
-              <td>{ planet.orbital_period }</td>
-              <td>{ planet.diameter }</td>
-              <td>{ planet.climate }</td>
-              <td>{ planet.gravity }</td>
-              <td>{ planet.terrain }</td>
-              <td>{ planet.surface_water }</td>
-              <td>{ planet.population }</td>
-              <td>{ planet.films.map((element) => element) }</td>
-              <td>{ planet.created }</td>
-              <td>{ planet.edited }</td>
-              <td>{ planet.url }</td>
-            </tr>
-          ))}
-        </tbody>
+      <table className="tabela">
+        <Thead />
+        <Tbody data={ dataToFilter } />
       </table>
     </main>
   );
