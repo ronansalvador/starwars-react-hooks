@@ -12,13 +12,17 @@ function PlanetsProvider({ children }) {
       filterByName: {
         name: '',
       },
+      filterByNumericValues: [],
+      order: {
+        column: 'Name', sort: 'ASC',
+      },
     },
   );
 
   function requestApi() {
     fetch('https://swapi-trybe.herokuapp.com/api/planets/')
       .then((result) => result.json());
-    // .then((result) => setData(result.results));
+    //   .then((result) => setData(result.results));
     setData(response.results);
   }
 
