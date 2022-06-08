@@ -74,7 +74,7 @@ function Table() {
   }, [filters.filterByNumericValues]);
 
   useEffect(() => {
-    function filterName(nome) {
+    function filterName(nome) { // busca por nome
       const filterByName = data.filter(
         (planet) => planet.name.toLowerCase().includes(nome.toLowerCase()),
       );
@@ -121,15 +121,28 @@ function Table() {
   }
 
   function saveNumericFilters() {
+    // setFilters({ ...filters,
+    //   filterByNumericValues: [...filters.filterByNumericValues, saveFilters] });
+    // if (filterNumeric.length === 0) {
+    //   setFilterNumeric([saveFilters]);
+    // } else {
+    //   console.log(saveFilters);
+    //   setFilterNumeric([...filterNumeric, ...saveFilters]);
+    // }
+    // showFilters();
+    const numericFilter = {
+      column: inputColumn,
+      comparison: inputComparison,
+      value: inputNumber,
+    };
     setFilters({ ...filters,
-      filterByNumericValues: [...filters.filterByNumericValues, saveFilters] });
-    if (filterNumeric.length === 0) {
-      setFilterNumeric([saveFilters]);
-    } else {
-      console.log(saveFilters);
-      setFilterNumeric([...filterNumeric, ...saveFilters]);
-    }
-    showFilters();
+      filterByNumericValues: [...filters.filterByNumericValues, numericFilter] });
+
+    setFilterNumeric([...filterNumeric, numericFilter]);
+    console.log('column', inputColumn);
+    console.log('comparison', inputComparison);
+    console.log('value', inputNumber);
+    console.log(numericFilter);
   }
 
   return (
