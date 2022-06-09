@@ -12,16 +12,13 @@ function Table() {
   const [inputColumn, setInputColumn] = useState('population');
   const [inputComparison, setInputComparison] = useState('maior que');
   const [inputNumber, setInputNumber] = useState(0);
-  const initialFilter = {
-    column: inputColumn,
+  const initialFilter = { column: inputColumn,
     comparison: inputComparison,
     value: inputNumber };
   const [saveFilters, setSaveFilters] = useState(initialFilter);
   console.log(inputColumn, inputComparison, inputNumber);
 
-  const allColumns = ['population',
-    'orbital_period',
-    'diameter',
+  const allColumns = ['population', 'orbital_period', 'diameter',
     'rotation_period', 'surface_water'];
 
   const [columnsName, setColumnsName] = useState(allColumns);
@@ -90,14 +87,32 @@ function Table() {
   }, [filters.filterByNumericValues]);
 
   useEffect(() => {
-    function filterName(nome) { // busca por nome
-      const filterByName = data.filter(
-        (planet) => planet.name.toLowerCase().includes(nome.toLowerCase()),
-      );
-      setDataToFilter(filterByName);
-    }
-    filterName(filters.filterByName.name);
-  }, [data, filters.filterByName.name]);
+    const { name: inputName } = filters.filterByName;
+    const filterByName = data.filter(
+      (planet) => planet.name.toLowerCase().includes(inputName.toLowerCase()),
+    );
+
+    const filterByAll = filterByNumericValues.reduce((acc, filtro) => acc
+      .filter((planeta) => {
+        switch (filtro.comparison) {
+        case 'maior que':
+          console.log('maior');
+          return planeta[filtro.column] > Number(filtro.value);
+        case 'menor que':
+          console.log('menor');
+          return planeta[filtro.column] < Number(filtro.value);
+        case 'igual a':
+          console.log('igual a');
+          console.log('comparison', filtro.comparison);
+          console.log(planeta[filtro.column]);
+          return Number(planeta[filtro.column]) === Number(filtro.value);
+        default:
+          return true;
+        }
+      }), filterByName);
+    console.log(filterByAll);
+    setDataToFilter(filterByAll);
+  }, [data, filters.filterByName, filterByNumericValues]);
 
   useEffect(() => {
     requestApi();
