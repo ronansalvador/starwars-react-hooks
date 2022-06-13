@@ -1,69 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
+import SearchName from './SearchName';
 import Thead from './Thead';
 import './Table.css';
 import Tbody from './Tbody';
 
 function Table() {
-  const { data, requestApi, filters, setFilters } = useContext(PlanetsContext);
-  const { filterByNumericValues } = filters;
-  const [dataToFilter, setDataToFilter] = useState([]);
-  const [filterNumeric, setFilterNumeric] = useState([]);
-  const [inputColumn, setInputColumn] = useState('population');
-  const [inputComparison, setInputComparison] = useState('maior que');
-  const [inputNumber, setInputNumber] = useState(0);
-  const initialFilter = { column: inputColumn,
-    comparison: inputComparison,
-    value: inputNumber };
-  const [saveFilters, setSaveFilters] = useState(initialFilter);
-
-  const allColumns = ['population', 'orbital_period', 'diameter',
-    'rotation_period', 'surface_water'];
-
-  const [columnsName, setColumnsName] = useState(allColumns);
-
-  function handleColumn({ target: { name, value } }) {
-    setInputColumn(value);
-    setSaveFilters({ ...saveFilters, [name]: value });
-  }
-
-  function handleComparison({ target: { name, value } }) {
-    setInputComparison(value);
-    setSaveFilters({ ...saveFilters, [name]: value });
-  }
-
-  function handleNumber({ target: { name, value } }) {
-    setInputNumber(value);
-    setSaveFilters({ ...saveFilters, [name]: value });
-  }
-
-  function filterColumns({ column }) {
-    setColumnsName(columnsName.filter((element) => element !== column));
-  }
-
-  function handleChange({ target }) {
-    setFilters(
-      { ...filters,
-        filterByName: {
-          name: target.value,
-        } },
-    );
-  }
-
-  function onClickFilter({ column, comparison, value }) {
-    if (comparison === 'maior que') {
-      setDataToFilter(dataToFilter
-        .filter((planet) => Number(planet[column]) > Number(value)));
-    }
-    if (comparison === 'menor que') {
-      setDataToFilter(dataToFilter
-        .filter((planet) => Number(planet[column]) < Number(value)));
-    }
-    if (comparison === 'igual a') {
-      setDataToFilter(dataToFilter
-        .filter((planet) => Number(planet[column]) === Number(value)));
-    }
-  }
+  const { data, requestApi, filters, setFilters, dataToFilter,
+    setDataToFilter, filterNumeric, setFilterNumeric, inputColumn,
+    inputComparison, inputNumber, orderColumn, setOrderColumn,
+    inputSort, setInputSort, allColumns, columnsName, setColumnsName, onClickFilter,
+    handleColumn, handleComparison, handleNumber, filterColumns,
+    planetsData, setPlanetsData, saveNumericFilters,
+    removeFilter } = useContext(PlanetsContext);
+  const { filterByNumericValues, order } = filters;
 
   useEffect(() => {
     if (filters.filterByNumericValues.length > 0) {
@@ -110,25 +60,6 @@ function Table() {
     requestApi();
   }, [requestApi]);
 
-  function saveNumericFilters() {
-    // showFilters();
-    const numericFilter = {
-      column: inputColumn,
-      comparison: inputComparison,
-      value: inputNumber,
-    };
-    setFilters({ ...filters,
-      filterByNumericValues: [...filters.filterByNumericValues, numericFilter] });
-    setFilterNumeric([...filterNumeric, numericFilter]);
-  }
-
-  function removeFilter({ target: { name } }) {
-    setFilterNumeric(filterNumeric.filter((element) => element.column !== name));
-    setFilters({ ...filters,
-      filterByNumericValues: filterByNumericValues
-        .filter((element) => element.column !== name) });
-  }
-
   function showFilters() {
     return (
       <div>
@@ -162,20 +93,44 @@ function Table() {
     setDataToFilter(data);
   };
 
+  const orderPlanets = () => {
+    setFilters({ ...filters,
+      order: {
+        column: orderColumn,
+        sort: inputSort,
+      } });
+  };
+
+  useEffect(() => {
+    const unknownData = data
+      .filter((planet) => planet[order.column] === 'unknown');
+    const planets = data.filter((planet) => planet[order.column] !== 'unknown');
+    setPlanetsData({
+      unknownData,
+      planets,
+    });
+  }, [order, data]);
+
+  useEffect(() => {
+    let sortedList = [];
+    const { unknownData, planets } = planetsData;
+
+    if (order.sort === 'ASC') {
+      sortedList = planets
+        .sort((a, b) => Number(a[order.column]) - Number(b[order.column]));
+      return setDataToFilter([...sortedList, ...unknownData]);
+    }
+    if (order.sort === 'DESC') {
+      sortedList = planets
+        .sort((a, b) => Number(b[order.column]) - Number(a[order.column]));
+      return setDataToFilter([...sortedList, ...unknownData]);
+    }
+  }, [order, planetsData]);
+
   return (
     <main>
       <h1>Projeto Starwars</h1>
-      <div className="filterName">
-        <label htmlFor="filterName">
-          Buscar por nome:
-          <input
-            type="text"
-            onChange={ handleChange }
-            data-testid="name-filter"
-            id="filterName"
-          />
-        </label>
-      </div>
+      <SearchName filters />
       <div className="filters">
         <label htmlFor="column">
           Coluna
@@ -222,6 +177,51 @@ function Table() {
         >
           Filtrar
         </button>
+        <label htmlFor="orderColumns">
+          Ordenar
+          <select
+            id="orderColumns"
+            data-testid="column-sort"
+            value={ orderColumn }
+            onChange={ ({ target }) => setOrderColumn(target.value) }
+          >
+            { allColumns.map((column, index) => (
+              <option value={ column } key={ index }>
+                {column}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label htmlFor="asc">
+          ASC:
+          <input
+            type="radio"
+            name="sort"
+            id="asc"
+            value="ASC"
+            data-testid="column-sort-input-asc"
+            onClick={ ({ target }) => setInputSort(target.value) }
+          />
+        </label>
+        <label htmlFor="desc">
+          DESC:
+          <input
+            type="radio"
+            name="sort"
+            id="desc"
+            value="DESC"
+            data-testid="column-sort-input-desc"
+            onClick={ ({ target }) => setInputSort(target.value) }
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="column-sort-button"
+          onClick={ orderPlanets }
+        >
+          Ordernar
+        </button>
+
         <button
           type="button"
           data-testid="button-remove-filters"
