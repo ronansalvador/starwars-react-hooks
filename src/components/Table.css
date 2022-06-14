@@ -68,3 +68,21 @@ button:hover {
 h1 {
   text-align: center;
 }
+
+.radio-sort {
+  align-items: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.radio-sort label {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.radio-sort input {
+  height: 30px;
+  margin-right: 10px;
+}

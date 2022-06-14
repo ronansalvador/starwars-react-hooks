@@ -192,28 +192,30 @@ function Table() {
             ))}
           </select>
         </label>
-        <label htmlFor="asc">
-          ASC:
-          <input
-            type="radio"
-            name="sort"
-            id="asc"
-            value="ASC"
-            data-testid="column-sort-input-asc"
-            onClick={ ({ target }) => setInputSort(target.value) }
-          />
-        </label>
-        <label htmlFor="desc">
-          DESC:
-          <input
-            type="radio"
-            name="sort"
-            id="desc"
-            value="DESC"
-            data-testid="column-sort-input-desc"
-            onClick={ ({ target }) => setInputSort(target.value) }
-          />
-        </label>
+        <div className="radio-sort">
+          <label htmlFor="asc">
+            <input
+              type="radio"
+              name="sort"
+              id="asc"
+              value="ASC"
+              data-testid="column-sort-input-asc"
+              onClick={ ({ target }) => setInputSort(target.value) }
+            />
+            Ascendente
+          </label>
+          <label htmlFor="desc">
+            <input
+              type="radio"
+              name="sort"
+              id="desc"
+              value="DESC"
+              data-testid="column-sort-input-desc"
+              onClick={ ({ target }) => setInputSort(target.value) }
+            />
+            Descendente
+          </label>
+        </div>
         <button
           type="button"
           data-testid="column-sort-button"
