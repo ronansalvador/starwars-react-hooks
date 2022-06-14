@@ -50,6 +50,7 @@ button {
 button:hover {
   background-color: yellow;
   color: black;
+  cursor: pointer;
 }
 
 .filterName {
@@ -86,3 +87,34 @@ h1 {
   height: 30px;
   margin-right: 10px;
 }
+
+.numeric-filters {
+  align-items: center;
+  display: flex;
+}
+
+.numeric-filters button {
+  background-color: #1d1e1e;
+  border: none;
+  border-radius: 12px;
+  margin-left: 5px;
+}
+
+.numeric-filters button:hover {
+  background-color: rgba(255, 7, 7, 0.349);
+}
+
+.numeric-filters button input {
+  background: none;
+  border: none;
+  border-radius: inherit;
+  inset: 0;
+  margin: 0;
+  opacity: 1;
+  overflow: hidden;
+  padding: 5px;
+  pointer-events: none;
+  width: 20px;
+  z-index: 0;
+}
+

@@ -4,6 +4,7 @@ import SearchName from './SearchName';
 import Thead from './Thead';
 import './Table.css';
 import Tbody from './Tbody';
+import trash from '../image/trash-solid.svg';
 
 function Table() {
   const { data, requestApi, filters, setFilters, dataToFilter,
@@ -64,7 +65,7 @@ function Table() {
     return (
       <div>
         {filterNumeric && filterNumeric.map((filter, index) => (
-          <div data-testid="filter" key={ index }>
+          <div data-testid="filter" key={ index } className="numeric-filters">
             <span>
               {' '}
               {filter.column}
@@ -79,8 +80,9 @@ function Table() {
               onClick={ removeFilter }
               name={ filter.column }
             >
-              x
+              <input type="image" src={ trash } alt="excluir" />
             </button>
+
           </div>
         )) }
       </div>
